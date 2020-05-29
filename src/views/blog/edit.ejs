@@ -7,24 +7,17 @@
 </head>
 <body>
   <header>
-    <h1>Create your own blog</h1>
+    <h1>Edit</h1>
+    <p>by <%= author %> (<%= email %>)</p>
+    <p><%= description %></p>
   </header>
   <main>
     <form action="/" method="POST">
       <label>
-        Subdomain
-        <input
-          name="subdomain"
-          type="text"
-          required
-        >
-      </label>
-      <br>
-
-      <label>
         Title
         <input
           name="title"
+          value="<%= title %>"
           type="text"
           required
         >
@@ -35,6 +28,7 @@
         Author
         <input
           name="author"
+          value="<%= author %>"
           type="text"
           required
         >
@@ -45,13 +39,24 @@
         Email
         <input
           name="email"
+          value="<%= email %>"
           type="email"
           required
         >
       </label>
       <br>
 
-      <button type="submit">Create blog</button>
+      <label>
+        Password
+        <input
+          name="password"
+          type="password"
+          required
+        >
+      </label>
+      <br>
+
+      <button type="submit">Publish</button>
     </form>
   </main>
 </body>

@@ -6,6 +6,7 @@ const blogSchema = new mongoose.Schema({
   description: String,
   email: {type: String, required: true},
   author: {type: String, required: true},
+  password: {type: String, required: true},
 })
 
 const Blog = mongoose.model('Blog', blogSchema)
