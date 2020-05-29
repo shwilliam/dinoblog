@@ -20,6 +20,8 @@ app.set('view engine', 'ejs')
 
 app.get('/', (_, res) => res.render('index'))
 
+app.get('/create', (_, res) => res.render('create'))
+
 app.post('/', (req, res) => {
   const body = req.body
   const subdomain = body.subdomain
