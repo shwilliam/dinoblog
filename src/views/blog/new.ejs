@@ -7,17 +7,14 @@
 </head>
 <body>
   <header>
-    <h1>Edit</h1>
-    <p>by <%= author %> (<%= email %>)</p>
-    <p><%= description %></p>
+    <h1>New post</h1>
   </header>
   <main>
-    <form action="/_edit" method="POST">
+    <form action="/_new" method="POST" id="blog-form">
       <label>
         Title
         <input
           name="title"
-          value="<%= title %>"
           type="text"
           required
         >
@@ -25,10 +22,9 @@
       <br>
 
       <label>
-        Author
+        Slug
         <input
-          name="author"
-          value="<%= author %>"
+          name="slug"
           type="text"
           required
         >
@@ -36,13 +32,8 @@
       <br>
 
       <label>
-        Email
-        <input
-          name="email"
-          value="<%= email %>"
-          type="email"
-          required
-        >
+        Content
+        <textarea name="content" form="blog-form"></textarea>
       </label>
       <br>
 
