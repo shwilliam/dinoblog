@@ -1,12 +1,11 @@
-const express = require('express')
-const bcrypt = require('bcrypt')
-const bodyParser = require('body-parser')
-const path = require('path')
-const shortid = require('shortid')
-const wildcardSubdomains = require('wildcard-subdomains')
-
-const mongoose = require('mongoose')
-const models = require('./models')
+import bcrypt from 'bcrypt'
+import bodyParser from 'body-parser'
+import express from 'express'
+import mongoose from 'mongoose'
+import path from 'path'
+import shortid from 'shortid'
+import wildcardSubdomains from 'wildcard-subdomains'
+import {Blog, Post} from './models'
 
 const PORT = process.env.PORT || 1234
 const DB_URL = 'mongodb://mongo:27017/api'
@@ -25,133 +24,94 @@ app.get('/', (_, res) => res.render('index'))
 app.get('/create', (_, res) => res.render('create'))
 
 app.post('/', (req, res) => {
-  const body = req.body
-  const subdomain = body.subdomain
-  const title = body.title
-  const description = body.description
-  const email = body.email
-  const author = body.author
   const password = shortid.generate()
   const hashedPassword = bcrypt.hashSync(password, 10)
 
-  const newBlog = new models.Blog({
-    subdomain,
-    title,
-    description,
-    email,
-    author,
+  const newBlog = new Blog({
+    ...req.body,
     password: hashedPassword,
   })
 
-  newBlog.save(err => {
+  newBlog.save((err, blog) => {
     if (err)
       res.status(422).send({error: 'error creating blog', detail: err.message})
-    else
-      res.render('success', {password, url: `http://${subdomain}.dinoblog.net`})
+    else res.render('success', {subdomain: blog.subdomain, password})
   })
 })
 
-app.get('/_sub/:firstSubdomain/_new', function (req, res) {
+app.get('/_sub/:firstSubdomain/_new', (req, res) => {
   const firstSubdomain = req.params.firstSubdomain
 
-  models.Blog.findOne({subdomain: firstSubdomain}, (err, blog) => {
+  Blog.findOne({subdomain: firstSubdomain}, (err, blog) => {
     if (err || !blog) res.send('🤷‍♀️')
     else res.render('blog/new', blog)
   })
 })
 
-app.get('/_sub/:firstSubdomain/_edit', function (req, res) {
+app.get('/_sub/:firstSubdomain/_edit', (req, res) => {
   const firstSubdomain = req.params.firstSubdomain
-  // const originalUrl = req.params.originalUrl
-  // const queryString = JSON.stringify(req.query)
 
-  models.Blog.findOne({subdomain: firstSubdomain}, (err, blog) => {
+  Blog.findOne({subdomain: firstSubdomain}, (err, blog) => {
     if (err || !blog) res.send('🤷‍♀️')
     else res.render('blog/edit', blog)
   })
 })
 
-app.post('/_sub/:firstSubdomain/blog/:slug/_edit', function (req, res) {
-  const body = req.body
-  const title = body.title
-  const content = body.content
-  const slug = body.slug
-  const password = body.password
+app.post('/_sub/:firstSubdomain/blog/:slug/_edit', (req, res) => {
+  const {firstSubdomain} = req.params
 
-  const firstSubdomain = req.params.firstSubdomain
-
-  models.Blog.findOne({subdomain: firstSubdomain}, (err, blog) => {
+  Blog.findOne({subdomain: firstSubdomain}, (err, blog) => {
     if (err || !blog) res.send('🤷‍♀️')
-    if (!bcrypt.compareSync(password, blog.password)) res.send('🔐')
+    if (!bcrypt.compareSync(req.body.password, blog.password)) res.send('🔐')
     else {
-      models.Blog.findOne({subdomain: firstSubdomain}, (err, blog) => {
+      Blog.findOne({subdomain: firstSubdomain}, (err, blog) => {
         if (err || !blog) res.send('🤷‍♀️')
         else {
-          const postIdx = blog.posts.findIndex(post => post.slug === slug)
-          blog.posts[postIdx] = {
-            title,
-            slug,
-            content,
+          const postIdx = blog.posts.findIndex(
+            post => post.slug === req.body.slug,
+          )
+          if (postIdx === -1) res.send('🤷‍♀️')
+          else {
+            blog.posts[postIdx] = {
+              ...req.body,
+            }
+            blog.save()
+            res.send('🎊')
           }
-          blog.save()
-          res.send('🎊')
         }
       })
     }
   })
 })
 
-app.post('/_sub/:firstSubdomain/_new', function (req, res) {
-  const body = req.body
-  const title = body.title
-  const slug = body.slug
-  const content = body.content
-  const password = body.password
+app.post('/_sub/:firstSubdomain/_new', (req, res) => {
+  const {firstSubdomain} = req.params
 
-  const firstSubdomain = req.params.firstSubdomain
-
-  models.Blog.findOne({subdomain: firstSubdomain}, (err, blog) => {
+  Blog.findOne({subdomain: firstSubdomain}, (err, blog) => {
     if (err || !blog) res.send('🤷‍♀️')
-    if (!bcrypt.compareSync(password, blog.password)) res.send('🔐')
+    if (!bcrypt.compareSync(req.body.password, blog.password)) res.send('🔐')
     else {
-      models.Blog.findOne({subdomain: firstSubdomain}, (err, blog) => {
-        if (err || !blog) res.send('🤷‍♀️')
-        else {
-          const post = new models.Post({
-            title,
-            slug,
-            content,
-          })
-          blog.posts.push(post)
-          blog.save()
-          res.send('🎊')
-        }
+      const post = new Post({
+        ...req.body,
       })
+      blog.posts.push(post)
+      blog.save()
+      res.send('🎊')
     }
   })
 })
 
-app.post('/_sub/:firstSubdomain/_edit', function (req, res) {
-  const body = req.body
-  const title = body.title
-  const description = body.description
-  const email = body.email
-  const author = body.author
-  const password = body.password
+app.post('/_sub/:firstSubdomain/_edit', (req, res) => {
+  const {firstSubdomain} = req.params
 
-  const firstSubdomain = req.params.firstSubdomain
-
-  models.Blog.findOne({subdomain: firstSubdomain}, (err, blog) => {
+  Blog.findOne({subdomain: firstSubdomain}, (err, blog) => {
     if (err || !blog) res.send('🤷‍♀️')
-    if (!bcrypt.compareSync(password, blog.password)) res.send('🔐')
+    if (!bcrypt.compareSync(req.body.password, blog.password)) res.send('🔐')
     else
-      models.Blog.findOneAndUpdate(
+      Blog.findOneAndUpdate(
         {subdomain: firstSubdomain},
         {
-          title,
-          description,
-          email,
-          author,
+          ...req.body,
         },
         (err, blog) => {
           if (err || !blog) res.send('🤷‍♀️')
@@ -161,61 +121,69 @@ app.post('/_sub/:firstSubdomain/_edit', function (req, res) {
   })
 })
 
-app.get('/_sub/:firstSubdomain', function (req, res) {
-  const firstSubdomain = req.params.firstSubdomain
-  // const originalUrl = req.params.originalUrl
-  // const queryString = JSON.stringify(req.query)
+app.get('/_sub/:firstSubdomain', (req, res) => {
+  const {firstSubdomain} = req.params
 
-  models.Blog.findOne({subdomain: firstSubdomain}, (err, blog) => {
+  Blog.findOne({subdomain: firstSubdomain}, (err, blog) => {
     if (err || !blog) res.send('🤷‍♀️')
     else res.render('blog/index', blog)
   })
 })
 
-app.get('/_sub/:firstSubdomain/blog', function (req, res) {
-  const firstSubdomain = req.params.firstSubdomain
+app.get('/_sub/:firstSubdomain/blog', (req, res) => {
+  const {firstSubdomain} = req.params
 
-  models.Blog.findOne({subdomain: firstSubdomain}, (err, blog) => {
+  Blog.findOne({subdomain: firstSubdomain}, (err, blog) => {
     if (err || !blog) res.send('🤷‍♀️')
     else res.render('blog/blog', blog)
   })
 })
 
-app.get('/_sub/:firstSubdomain/blog/:slug', function (req, res) {
-  const firstSubdomain = req.params.firstSubdomain
-  const slug = req.params.slug
+app.get('/_sub/:firstSubdomain/blog/:slug', (req, res) => {
+  const {firstSubdomain, slug} = req.params
 
-  models.Blog.findOne({subdomain: firstSubdomain}, (err, blog) => {
-    if (err || !blog) res.send('🤷‍♀️')
+  Blog.findOne({subdomain: firstSubdomain}, (err, blog) => {
+    if (err || !blog || slug === '_edit') res.send('🤷‍♀️')
     else {
       const post = blog.posts.find(post => post.slug === slug)
-      res.render('blog/post', {
-        author: blog.author,
-        email: blog.email,
-        blogTitle: blog.title,
-        title: post.title,
-        content: post.content,
-      })
+      if (!post) res.send('🤷‍♀️')
+      else {
+        const {author, email, title: blogTitle} = blog
+        const {title, content} = post
+
+        res.render('blog/post', {
+          author,
+          email,
+          blogTitle,
+          title,
+          content,
+        })
+      }
     }
   })
 })
 
-app.get('/_sub/:firstSubdomain/blog/:slug/_edit', function (req, res) {
-  const firstSubdomain = req.params.firstSubdomain
-  const slug = req.params.slug
+app.get('/_sub/:firstSubdomain/blog/:slug/_edit', (req, res) => {
+  const {firstSubdomain, slug} = req.params
 
-  models.Blog.findOne({subdomain: firstSubdomain}, (err, blog) => {
+  Blog.findOne({subdomain: firstSubdomain}, (err, blog) => {
     if (err || !blog) res.send('🤷‍♀️')
     else {
       const post = blog.posts.find(post => post.slug === slug)
-      res.render('blog/post-edit', {
-        author: blog.author,
-        email: blog.email,
-        blogTitle: blog.title,
-        title: post.title,
-        content: post.content,
-        slug,
-      })
+      if (!post) res.send('🤷‍♀️')
+      else {
+        const {author, email, title: blogTitle} = blog
+        const {title, content} = post
+
+        res.render('blog/post-edit', {
+          author,
+          email,
+          blogTitle,
+          title,
+          content,
+          slug,
+        })
+      }
     }
   })
 })
@@ -230,6 +198,7 @@ mongoose
 
     app.listen(PORT, () => {
       console.log(`listening on port ${PORT}`)
+
       if (process.env.NODE_ENV === 'development')
         console.log(`test local subdomains at http://*.vcap.me:${PORT}/`)
     })
