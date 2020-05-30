@@ -7,25 +7,17 @@
 </head>
 <body>
   <header>
-    <h1>dinoblog</h1>
-    <h2>Create your own blog</h2>
+    <h1>Edit</h1>
+    <%- include('../partials/blog-nav') -%>
   </header>
-  <main>
-    <form action="/" method="POST" id="create-blog-form">
-      <label>
-        Subdomain
-        <input
-          name="subdomain"
-          type="text"
-          required
-        >
-      </label>
-      <br>
 
+  <main>
+    <form action="" method="POST" id="edit-post-form">
       <label>
         Title
         <input
           name="title"
+          value="<%= title %>"
           type="text"
           required
         >
@@ -33,9 +25,10 @@
       <br>
 
       <label>
-        Author
+        Slug
         <input
-          name="author"
+          name="slug"
+          value="<%= slug %>"
           type="text"
           required
         >
@@ -43,22 +36,22 @@
       <br>
 
       <label>
-        Email
+        Content
+        <textarea name="content" form="edit-post-form"><%= content %></textarea>
+      </label>
+      <br>
+
+      <label>
+        Password
         <input
-          name="email"
-          type="email"
+          name="password"
+          type="password"
           required
         >
       </label>
       <br>
 
-      <label>
-        Description
-        <textarea name="description" form="create-blog-form"></textarea>
-      </label>
-      <br>
-
-      <button type="submit">Create blog</button>
+      <button type="submit">Save</button>
     </form>
   </main>
 </body>

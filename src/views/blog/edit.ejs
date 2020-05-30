@@ -8,11 +8,13 @@
 <body>
   <header>
     <h1>Edit</h1>
-    <p>by <%= author %> (<%= email %>)</p>
-    <p><%= description %></p>
+    <%- include('../partials/blog-nav') -%>
   </header>
+
   <main>
-    <form action="/_edit" method="POST">
+    <a href="/_new">Add a new post</a>
+
+    <form action="/_edit" method="POST" id="edit-blog-form">
       <label>
         Title
         <input
@@ -43,6 +45,12 @@
           type="email"
           required
         >
+      </label>
+      <br>
+
+      <label>
+        Description
+        <textarea name="description" form="edit-blog-form"></textarea>
       </label>
       <br>
 

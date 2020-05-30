@@ -6,19 +6,10 @@
   <title>dinoblog</title>
 </head>
 <body>
-  <header>
-    <h1><%= title %></h1>
-    <p>by <%= author %> (<%= email %>)</p>
-    <p><%= description %></p>
-  </header>
+  <%- include('../partials/site-header') -%>
+
   <main>
-    <% if (posts) { %>
-      <ul>
-        <% posts.forEach(function (post) { %>
-          <li><%= post.title %></li>
-        <% }) %>
-      </ul>
-    <% } %>
+    <p><%= description %></p>
   </main>
 </body>
 </html>

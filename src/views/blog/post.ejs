@@ -6,10 +6,10 @@
   <title>dinoblog</title>
 </head>
 <body>
-  <header>
-    <h1><%= title %></h1>
-  </header>
+  <%- include('../partials/blog-header') -%>
+
   <main>
+    <h2><%= title %></h2>
     <p><%= content %></p>
   </main>
 </body>

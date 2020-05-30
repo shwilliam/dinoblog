@@ -43,11 +43,11 @@ app.post('/', (req, res) => {
     password: hashedPassword,
   })
 
-  newBlog.save((err, blog) => {
-    if (err) {
+  newBlog.save(err => {
+    if (err)
       res.status(422).send({error: 'error creating blog', detail: err.message})
-    }
-    res.send(password)
+    else
+      res.render('success', {password, url: `http://${subdomain}.dinoblog.net`})
   })
 })
 
@@ -68,6 +68,36 @@ app.get('/_sub/:firstSubdomain/_edit', function (req, res) {
   models.Blog.findOne({subdomain: firstSubdomain}, (err, blog) => {
     if (err || !blog) res.send('🤷‍♀️')
     else res.render('blog/edit', blog)
+  })
+})
+
+app.post('/_sub/:firstSubdomain/blog/:slug/_edit', function (req, res) {
+  const body = req.body
+  const title = body.title
+  const content = body.content
+  const slug = body.slug
+  const password = body.password
+
+  const firstSubdomain = req.params.firstSubdomain
+
+  models.Blog.findOne({subdomain: firstSubdomain}, (err, blog) => {
+    if (err || !blog) res.send('🤷‍♀️')
+    if (!bcrypt.compareSync(password, blog.password)) res.send('🔐')
+    else {
+      models.Blog.findOne({subdomain: firstSubdomain}, (err, blog) => {
+        if (err || !blog) res.send('🤷‍♀️')
+        else {
+          const postIdx = blog.posts.findIndex(post => post.slug === slug)
+          blog.posts[postIdx] = {
+            title,
+            slug,
+            content,
+          }
+          blog.save()
+          res.send('🎊')
+        }
+      })
+    }
   })
 })
 
@@ -142,7 +172,16 @@ app.get('/_sub/:firstSubdomain', function (req, res) {
   })
 })
 
-app.get('/_sub/:firstSubdomain/:slug', function (req, res) {
+app.get('/_sub/:firstSubdomain/blog', function (req, res) {
+  const firstSubdomain = req.params.firstSubdomain
+
+  models.Blog.findOne({subdomain: firstSubdomain}, (err, blog) => {
+    if (err || !blog) res.send('🤷‍♀️')
+    else res.render('blog/blog', blog)
+  })
+})
+
+app.get('/_sub/:firstSubdomain/blog/:slug', function (req, res) {
   const firstSubdomain = req.params.firstSubdomain
   const slug = req.params.slug
 
@@ -150,7 +189,33 @@ app.get('/_sub/:firstSubdomain/:slug', function (req, res) {
     if (err || !blog) res.send('🤷‍♀️')
     else {
       const post = blog.posts.find(post => post.slug === slug)
-      res.render('blog/post', post)
+      res.render('blog/post', {
+        author: blog.author,
+        email: blog.email,
+        blogTitle: blog.title,
+        title: post.title,
+        content: post.content,
+      })
+    }
+  })
+})
+
+app.get('/_sub/:firstSubdomain/blog/:slug/_edit', function (req, res) {
+  const firstSubdomain = req.params.firstSubdomain
+  const slug = req.params.slug
+
+  models.Blog.findOne({subdomain: firstSubdomain}, (err, blog) => {
+    if (err || !blog) res.send('🤷‍♀️')
+    else {
+      const post = blog.posts.find(post => post.slug === slug)
+      res.render('blog/post-edit', {
+        author: blog.author,
+        email: blog.email,
+        blogTitle: blog.title,
+        title: post.title,
+        content: post.content,
+        slug,
+      })
     }
   })
 })

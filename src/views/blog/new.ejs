@@ -8,9 +8,10 @@
 <body>
   <header>
     <h1>New post</h1>
+    <%- include('../partials/blog-nav') -%>
   </header>
   <main>
-    <form action="/_new" method="POST" id="blog-form">
+    <form action="/_new" method="POST" id="new-post-form">
       <label>
         Title
         <input
@@ -33,7 +34,7 @@
 
       <label>
         Content
-        <textarea name="content" form="blog-form"></textarea>
+        <textarea name="content" form="new-post-form"></textarea>
       </label>
       <br>
 
