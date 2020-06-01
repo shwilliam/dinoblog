@@ -1,5 +1,4 @@
 <header>
-  <h1><%= blogTitle %></h1>
-  <p>by <%= author %> (<%= email %>)</p>
+  <h1><% if (locals.blogTitle) { %><%= blogTitle %><% } else { %><%= title %><% } %></h1>
   <%- include('blog-nav') -%>
 </header>

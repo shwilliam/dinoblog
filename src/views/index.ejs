@@ -1,24 +1,27 @@
-<!DOCTYPE html>
-<html lang="en">
-<head>
-  <meta charset="UTF-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>dinoblog</title>
-</head>
+<%- include('./partials/site-head') -%>
+
 <body>
   <header>
+    <%- include('./partials/dino') -%>
     <h1>Welcome to dinoblog!</h1>
-    <pre aria-hidden>
-               __
-              / _)
-     _.----._/ /
-    /         /
- __/ (  | (  |
-/__.-'|_|--|_|
-    </pre>
   </header>
   <main>
-    <a href="/create">Create a blog</a>
+    <p>
+      Dinoblog makes it easier than ever to start sharing your writing.
+      Answer a few questions and start publishing content to a sharable URL.
+      <b>No ads. No trackers. Just words.</b>
+    </p>
+
+    <p>
+      <small>
+        <b>Security notice:</b> Please note several essential security features
+        are missing from this demo. Ensure you store a backup of your work in
+        case of any issues.
+      </small>
+    </p>
+
+    <a href="/create">Click here to get started.</a>
   </main>
 </body>
-</html>
+
+<%- include('./partials/site-footer') -%>

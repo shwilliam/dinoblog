@@ -31,7 +31,6 @@ router.post('/', (req, res) => {
   })
 
   newBlog.save((err, blog) => {
-    console.log(blog.password)
     if (err) renderErrorView(res, 500)
     else res.render('success', {subdomain: blog.subdomain, password})
   })
