@@ -1,6 +1,7 @@
 import express from 'express'
-import shortid from 'shortid'
 import bcrypt from 'bcrypt'
+import markdownParser from 'markdown-it'
+import shortid from 'shortid'
 import {Blog, Post} from './models'
 
 const renderErrorView = (res, status) => {
@@ -130,7 +131,17 @@ router.get('/_sub/:firstSubdomain', (req, res) => {
   Blog.findOne({subdomain: firstSubdomain}, (err, blog) => {
     if (err) renderErrorView(res, 500)
     else if (!blog) renderErrorView(res, 404)
-    else res.render('blog/index', blog)
+    else {
+      const {title, subdomain, author, email, description} = blog
+
+      res.render('blog/index', {
+        title,
+        subdomain,
+        author,
+        email,
+        description: markdownParser().render(description),
+      })
+    }
   })
 })
 
@@ -163,7 +174,7 @@ router.get('/_sub/:firstSubdomain/blog/:slug', (req, res) => {
           email,
           blogTitle,
           title,
-          content,
+          content: markdownParser().render(content),
         })
       }
     }
