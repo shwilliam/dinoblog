@@ -22,6 +22,18 @@ app.set('view engine', 'ejs')
 // routes
 app.use('/', router)
 
+// 404
+app.use((_, res) => {
+  res.status(404)
+  res.render('status', {code: '404'})
+})
+
+// 500
+app.use((_, __, res, ___) => {
+  res.status(500)
+  res.render('status', {code: '500'})
+})
+
 mongoose
   .connect(DB_URL, {
     useNewUrlParser: true,
