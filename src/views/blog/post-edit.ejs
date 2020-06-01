@@ -10,6 +10,7 @@
     <form action="" method="POST" id="edit-post-form">
       <label>
         Title
+        <br>
         <input
           name="title"
           value="<%= title %>"
@@ -21,6 +22,7 @@
 
       <label>
         Slug
+        <br>
         <input
           name="slug"
           value="<%= slug %>"
@@ -32,12 +34,14 @@
 
       <label>
         Content
+        <br>
         <textarea name="content" form="edit-post-form"><%= content %></textarea>
       </label>
       <br>
 
       <label>
         Password
+        <br>
         <input
           name="password"
           type="password"

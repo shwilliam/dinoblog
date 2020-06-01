@@ -12,6 +12,7 @@
     <form action="/_edit" method="POST" id="edit-blog-form">
       <label>
         Title
+        <br>
         <input
           name="title"
           value="<%= title %>"
@@ -23,6 +24,7 @@
 
       <label>
         Author
+        <br>
         <input
           name="author"
           value="<%= author %>"
@@ -34,6 +36,7 @@
 
       <label>
         Email
+        <br>
         <input
           name="email"
           value="<%= email %>"
@@ -45,12 +48,14 @@
 
       <label>
         Description
+        <br>
         <textarea name="description" form="edit-blog-form"><%= description %></textarea>
       </label>
       <br>
 
       <label>
         Password
+        <br>
         <input
           name="password"
           type="password"

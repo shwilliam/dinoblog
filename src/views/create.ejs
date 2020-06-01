@@ -3,24 +3,28 @@
 <body>
   <header>
     <%- include('./partials/dino') -%>
-    <h1>Create your own blog</h1>
+    <h1>Create your blog</h1>
   </header>
   <main>
     <form action="/" method="POST" id="create-blog-form">
       <label>
         Subdomain
+        <br>
         <input
           name="subdomain"
+          placeholder="my-awesome-blog"
           type="text"
           required
-        >
+        >.dinoblog.net
       </label>
       <br>
 
       <label>
         Title
+        <br>
         <input
           name="title"
+          placeholder="My Awesome Blog"
           type="text"
           required
         >
@@ -29,8 +33,10 @@
 
       <label>
         Author
+        <br>
         <input
           name="author"
+          placeholder="Jane Doe"
           type="text"
           required
         >
@@ -39,8 +45,10 @@
 
       <label>
         Email
+        <br>
         <input
           name="email"
+          placeholder="jane@mail.com"
           type="email"
           required
         >
@@ -48,8 +56,9 @@
       <br>
 
       <label>
-        Description
-        <textarea name="description" form="create-blog-form"></textarea>
+        Front-page content
+        <br>
+        <textarea name="description" form="create-blog-form" placeholder="An awesome blog about awesome things"></textarea>
       </label>
       <br>
 
