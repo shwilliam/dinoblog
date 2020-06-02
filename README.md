@@ -1,10 +1,15 @@
 # dinoblog
 
+<pre>
+               __
+              / _)
+     _.----._/ /
+    /         /
+ __/ (  | (  |
+/__.-'|_|--|_|
+</pre>
+
 > A minimal blogging platform written in Node
-
-## Development
-
-To run the app in a container run `docker-compose up` in the project root.
 
 ## Contributing
 
